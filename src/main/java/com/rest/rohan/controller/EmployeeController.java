@@ -23,7 +23,7 @@ public class EmployeeController {
 		EmployeeResponse response = new EmployeeResponse(); 
 		response.setStatusCode(HttpStatus.OK.value()); 
 		response.setStatusMessage("Success");
-		response.setResponseMsg("The front page of deployed app...")
+		response.setResponseMsg("The front page of deployed app...");
 		return ResponseEntity.ok(response);
 	}
 	
