@@ -11,7 +11,7 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmployeeResponse extends BaseResponse{
 
-	public String response;
+	public String responseMsg;
 	
 	public List<EmployeeEntity> getAllEmployees;
 	
