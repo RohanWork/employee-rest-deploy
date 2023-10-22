@@ -12,11 +12,20 @@ import com.rest.rohan.service.EmployeeService;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/empmgn")
+// @RequestMapping("/empmgn")
 public class EmployeeController {
 
 	@Autowired
 	EmployeeService employeeService;
+
+	@GetMapping (value = "/", produces = "application/json; charset=UTF-8")
+	public ResponseEntity<EmployeeResponse> responseMsg() throws Exception {
+		EmployeeResponse response = new EmployeeResponse(); 
+		response.setStatusCode(HttpStatus.OK.value()); 
+		response.setStatusMessage("Success");
+		response.setResponse("The front page of deployed app...")
+		return ResponseEntity.ok(response);
+	}
 	
 	@GetMapping (value = "/getAllEmployees", produces = "application/json; charset=UTF-8")
 	public ResponseEntity<EmployeeResponse> getAllEmployees() throws Exception {
