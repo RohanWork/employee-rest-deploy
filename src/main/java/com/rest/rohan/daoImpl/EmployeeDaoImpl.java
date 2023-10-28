@@ -112,7 +112,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		if (rowCount != 1) {
 			throw new ValidationException("Error while adding new employee to table (DI:L:"+getLineNumber()+")");
 		} else {
-			params.addValue("action", ("insert").toLowerCase());
+			params.addValue("action", "insert");
 			params.addValue("row_ins_tms", currentTimestamp);
 			params.addValue("row_del_tms", null);
 			int res = namedParameterJdbcTemplate.update(sqlAddEmployeeToEA(), params);
