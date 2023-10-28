@@ -41,7 +41,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	}
 
 	private String sqlAddEmployeeToEA() {
-		return "INSERT INTO " + tableName2 + " (empid, fname, lname, mailid, department, location, salary, action, row_ins_tms, row_del_tms) VALUES (:empid, :fname, :lname, :mailid, :department, :location, :salary, :action, :row_ins_tms, :row_del_tms)";
+		return "INSERT INTO " + tableName2 + " (empid, fname, lname, mailid, department, location, salary, action, row_ins_tms, row_del_tms) VALUES (:empid, :fname, :lname, :mailid, :department, :location, :salary, 'insert', :row_ins_tms, :row_del_tms)";
 	}
 
 	private String sqlAuditTableById() {
