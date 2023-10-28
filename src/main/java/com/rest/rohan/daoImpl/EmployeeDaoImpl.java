@@ -1,7 +1,9 @@
 package com.rest.rohan.daoImpl;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -97,33 +99,35 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	}
 
 	@Override
-	public int createEmployee(EmployeeEntity request) throws Exception {
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		params.addValue("empid", request.getEmpid());
-		params.addValue("fname", request.getFname().toLowerCase());
-		params.addValue("lname", request.getLname().toLowerCase());
-		params.addValue("mailid", request.getMailid().toLowerCase());
-		params.addValue("department", request.getDepartment().toLowerCase());
-		params.addValue("location", request.getLocation().toLowerCase());
-		params.addValue("salary", request.getSalary());
+public int createEmployee(EmployeeEntity request) throws Exception {
+    MapSqlParameterSource params = new MapSqlParameterSource();
+    params.addValue("empid", request.getEmpid());
+    params.addValue("fname", request.getFname().toLowerCase());
+    params.addValue("lname", request.getLname().toLowerCase());
+    params.addValue("mailid", request.getMailid().toLowerCase());
+    params.addValue("department", request.getDepartment().toLowerCase());
+    params.addValue("location", request.getLocation().toLowerCase());
+    params.addValue("salary", request.getSalary());
 
-		int rowCount = namedParameterJdbcTemplate.update(sqlAddEmployeeToEM(), params);
+    int rowCount = namedParameterJdbcTemplate.update(sqlAddEmployeeToEM(), params.getValues());
 
-		if (rowCount != 1) {
-			throw new ValidationException("Error while adding new employee to table (DI:L:"+getLineNumber()+")");
-		} else {
-			MapSqlParameterSource auditParams = new MapSqlParameterSource(params);
-		        auditParams.addValue("action", "insert");
-		        auditParams.addValue("row_ins_tms", currentTimestamp);
-		        auditParams.addValue("row_del_tms", null);
-			int res = namedParameterJdbcTemplate.update(sqlAddEmployeeToEA(), auditParams);
+    if (rowCount != 1) {
+        throw new ValidationException("Error while adding a new employee to the table (DI:L:" + getLineNumber() + ")");
+    } else {
+        Map<String, Object> auditParams = new HashMap<>(params.getValues());
+        auditParams.put("action", "insert");
+        auditParams.put("row_ins_tms", currentTimestamp);
+        auditParams.put("row_del_tms", null);
 
-			if (res != 1)
-				throw new ValidationException("Error while adding new employee to audit table (DI:L:"+getLineNumber()+")");
-			else
-				return res;
-		}
-	}
+        int res = namedParameterJdbcTemplate.update(sqlAddEmployeeToEA(), auditParams);
+
+        if (res != 1)
+            throw new ValidationException("Error while adding a new employee to the audit table (DI:L:" + getLineNumber() + ")");
+        else
+            return res;
+    }
+}
+
 
 	@Override
 	public void updateEmployee(EmployeeEntity request) throws Exception {
