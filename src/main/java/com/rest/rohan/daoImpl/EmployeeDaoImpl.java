@@ -42,8 +42,18 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		return "INSERT INTO " + tableName1 + " (empid, fname, lname, mailid, department, location, salary) VALUES (:empid, :fname, :lname, :mailid, :department, :location, :salary)";
 	}
 
+//	private String sqlAddEmployeeToEA() {
+//		return "INSERT INTO " + tableName2 + " (empid, fname, lname, mailid, department, location, salary, action, row_ins_tms, row_del_tms) VALUES (:empid, :fname, :lname, :mailid, :department, :location, :salary, :action, :row_ins_tms, :row_del_tms)";
+//	}
+
+//	private String sqlAddEmployeeToEA() {
+//		return "INSERT INTO " + tableName2 + " (empid, fname, lname, mailid, department, location, salary, action, row_ins_tms, row_del_tms) VALUES (:empid, :fname, :lname, :mailid, :department, :location, :salary, :action, CURRENT_TIMESTAMP, NULL)";
+//	}
+
+	//postgres query:
 	private String sqlAddEmployeeToEA() {
-		return "INSERT INTO " + tableName2 + " (empid, fname, lname, mailid, department, location, salary, action, row_ins_tms, row_del_tms) VALUES (:empid, :fname, :lname, :mailid, :department, :location, :salary, 'insert', :row_ins_tms, :row_del_tms)";
+		return "INSERT INTO employees_audit (empid, fname, lname, mailid, department, location, salary, action, row_ins_tms, row_del_tms)" +
+				"VALUES (:empid, :fname, :lname, :mailid, :department, :location, :salary, :action, CURRENT_TIMESTAMP, NULL)";
 	}
 
 	private String sqlAuditTableById() {
@@ -55,7 +65,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 	}
 
 	private String sqlUpdateAuditTable(){
-		return "UPDATE "+tableName2+" SET action = :action, row_del_tms = :row_del_tms WHERE empid = :empid and action='insert'";
+		return "UPDATE "+tableName2+" SET action = :action, row_del_tms = CURRENT_TIMESTAMP WHERE empid = :empid and action='insert'";
 	}
 
 	private String sqlVerifyRecords(){
@@ -116,8 +126,8 @@ public int createEmployee(EmployeeEntity request) throws Exception {
     } else {
         Map<String, Object> auditParams = new HashMap<>(params.getValues());
         auditParams.put("action", "insert");
-        auditParams.put("row_ins_tms", currentTimestamp);
-        auditParams.put("row_del_tms", null);
+//        auditParams.put("row_ins_tms", currentTimestamp);
+//        auditParams.put("row_del_tms", null);
 
         int res = namedParameterJdbcTemplate.update(sqlAddEmployeeToEA(), auditParams);
 
@@ -127,7 +137,6 @@ public int createEmployee(EmployeeEntity request) throws Exception {
             return res;
     }
 }
-
 
 	@Override
 	public void updateEmployee(EmployeeEntity request) throws Exception {
@@ -144,9 +153,9 @@ public int createEmployee(EmployeeEntity request) throws Exception {
 		if (rowAffected==0)
 			throw new ValidationException("Error while updating record (DI:L:"+getLineNumber()+")");
 		else {
-			params.addValue("action", ("update").toLowerCase());
-			params.addValue("row_ins_tms", currentTimestamp);
-			params.addValue("row_del_tms", null);
+			params.addValue("action", "update");
+//			params.addValue("row_ins_tms", currentTimestamp);
+//			params.addValue("row_del_tms", null);
 			int res = namedParameterJdbcTemplate.update(sqlAddEmployeeToEA(), params);
 			if (res!=1)
 				throw new ValidationException("Error while inserting new record in update (DI:L:"+getLineNumber()+")");
@@ -170,7 +179,7 @@ public int createEmployee(EmployeeEntity request) throws Exception {
 			throw new ValidationException("Error while deleting record (DI:L:"+getLineNumber()+")");
 		else {
 			param.addValue("action","delete");
-			param.addValue("row_del_tms",currentTimestamp);
+//			param.addValue("row_del_tms",currentTimestamp);
 			int rowAffect = namedParameterJdbcTemplate.update(sqlUpdateAuditTable(), param);
 			if (rowAffect!=1){
 				throw new ValidationException("Error while updating audit table in delete (DI:L:"+getLineNumber()+")");

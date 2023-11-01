@@ -12,7 +12,7 @@ import com.rest.rohan.service.EmployeeService;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-// @RequestMapping("/empmgn")
+ @RequestMapping("/empmgn")
 public class EmployeeController {
 
 	@Autowired
